@@ -17,6 +17,15 @@ export function getClients(token: string) {
     });
 }
 
+export function getClientsByPhone(token: string, phone: string) {
+    return axiosInstance.get("/contragents/", {
+        params: {
+            token,
+            phone,
+        },
+    });
+}
+
 export function getWarehouses(token: string) {
     return axiosInstance.get("/warehouses/", {
         params: { token },
@@ -50,8 +59,31 @@ export function getProducts(token: string, search?: string) {
     });
 }
 
-export function createSale(token: string, payload: unknown) {
+type CreateSalePayload = {
+    organization: number;
+    operation: string;
+    contragent: number;
+    warehouse: number;
+    paybox: number;
+
+    goods: {
+        nomenclature: number;
+        nomenclature_name: string;
+        quantity: number;
+        price: number;
+        price_type: number;
+    }[];
+};
+
+export const createSale = (
+    token: string,
+    conduct: boolean,
+    payload: CreateSalePayload[]
+) => {
     return axiosInstance.post("/docs_sales/", payload, {
-        params: { token },
+        params: {
+            token,
+            conduct,
+        },
     });
-}
+};
