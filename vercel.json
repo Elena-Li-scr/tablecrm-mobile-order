@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/bootstrap-api/:path*",
+            "destination": "https://tablecrm-mobile-order.vercel.app/api/:path*"
+        },
+        {
+            "source": "/tablecrm-api/:path*",
+            "destination": "https://app.tablecrm.com/api/v1/:path*"
+        }
+    ]
+}
