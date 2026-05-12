@@ -10,7 +10,7 @@ export function authorization(token: string) {
 }
 
 export function getClients(token: string) {
-    return axiosInstance.get("/contragents/", {
+    return axiosInstance.get("/contragents", {
         params: {
             token
         },
@@ -18,7 +18,7 @@ export function getClients(token: string) {
 }
 
 export function getClientsByPhone(token: string, phone: string) {
-    return axiosInstance.get("/contragents/", {
+    return axiosInstance.get("/contragents", {
         params: {
             token,
             phone,
@@ -27,31 +27,31 @@ export function getClientsByPhone(token: string, phone: string) {
 }
 
 export function getWarehouses(token: string) {
-    return axiosInstance.get("/warehouses/", {
+    return axiosInstance.get("/warehouses", {
         params: { token },
     });
 }
 
 export function getPayboxes(token: string) {
-    return axiosInstance.get("/payboxes/", {
+    return axiosInstance.get("/payboxes", {
         params: { token },
     });
 }
 
 export function getOrganizations(token: string) {
-    return axiosInstance.get("/organizations/", {
+    return axiosInstance.get("/organizations", {
         params: { token },
     });
 }
 
 export function getPriceTypes(token: string) {
-    return axiosInstance.get("/price_types/", {
+    return axiosInstance.get("/price_types", {
         params: { token },
     });
 }
 
 export function getProducts(token: string, search?: string) {
-    return axiosInstance.get("/nomenclature/", {
+    return axiosInstance.get("/nomenclature", {
         params: {
             token,
             search,
@@ -80,7 +80,7 @@ export const createSale = (
     conduct: boolean,
     payload: CreateSalePayload[]
 ) => {
-    return axiosInstance.post("/docs_sales/", payload, {
+    return axiosInstance.post("/docs_sales", payload, {
         params: {
             token,
             conduct,
