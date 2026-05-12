@@ -5,8 +5,8 @@
             "destination": "https://tablecrm-mobile-order.vercel.app/api/:path*"
         },
         {
-            "source": "/tablecrm-api/:match*",
-            "destination": "https://app.tablecrm.com/api/v1/:match*"
+            "source": "/tablecrm-api/:path*",
+            "destination": "https://app.tablecrm.com/api/v1/:path*/"
         }
     ]
 }
