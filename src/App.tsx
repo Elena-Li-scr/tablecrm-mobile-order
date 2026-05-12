@@ -224,7 +224,7 @@ function App() {
         payload
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         setGoods([]);
         if (conduct) {
           toast.success("Продажа успешно создана и проведена");
