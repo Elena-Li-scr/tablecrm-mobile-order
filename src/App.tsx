@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Toaster, toast } from "sonner";
+import { Phone, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 import { authorization, getOrganizations, getClientsByPhone, getWarehouses, getPriceTypes, getPayboxes, getProducts, createSale } from "@/server/api";
 
@@ -25,7 +28,7 @@ type Good = {
 
 
 function App() {
-  const [token, setToken] = useState(() => sessionStorage.getItem("token") || "");
+  const [token, setToken] = useState("");
   const [isAuth, setIsAuth] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [client, setClient] = useState('');
@@ -53,17 +56,17 @@ function App() {
   const checkAuth = async () => {
     try {
       if (!token) {
-        alert("Токен не найден");
+        toast.error("Токен не найден");
         return;
       }
 
       const response = await authorization(token);
 
       if (response.status === 200) {
-        console.log("Авторизация успешна");
 
         sessionStorage.setItem("token", token);
         setIsAuth(true);
+        toast.success("Авторизация прошла успешно");
         try {
           const warehousesResponse = await getWarehouses(token);
           const organizationsResponse = await getOrganizations(token);
@@ -73,34 +76,35 @@ function App() {
 
           if (warehousesResponse.status === 200) {
             setWarehouses(warehousesResponse.data.result);
-            console.log(warehousesResponse.data.result);
           }
 
           if (organizationsResponse.status === 200) {
             setOrganizations(organizationsResponse.data.result);
-            console.log(organizationsResponse.data.result);
+
           }
           if (priceTypesResponse.status === 200) {
             setPaymentTypes(priceTypesResponse.data.result);
-            console.log(priceTypesResponse.data.result);
+
           }
           if (payboxesResponse.status === 200) {
             setPayboxes(payboxesResponse.data.result);
-            console.log(payboxesResponse.data.result);
+
           }
 
           if (productsResponse.status === 200) {
             setProducts(productsResponse.data.result);
-            console.log(productsResponse.data.result);
+
           }
 
         } catch (error) {
           console.log("Ошибка получения данных", error);
+          toast.error("Ошибка получения данных");
         }
 
       }
     } catch (error) {
       console.log("Ошибка авторизации", error);
+      toast.error("Вы ввели некорректный токен! Попробуйте еще раз.");
     }
   };
 
@@ -110,7 +114,7 @@ function App() {
     try {
 
       if (!token) {
-        alert("Токен не найден");
+        toast.error("Токен не найден");
         return;
       }
 
@@ -123,9 +127,13 @@ function App() {
         setClient(foundClient?.name || "");
         setContragent(foundClient?.id || "");
         console.log(foundClient);
+        if (response.data.result.length === 0) {
+          toast.error("Клиент не найден, попробуйте ввести другой номер");
+        }
       }
     } catch (error) {
       console.log("Ошибка поиска клиента", error);
+
     }
   };
 
@@ -177,7 +185,7 @@ function App() {
       const token = sessionStorage.getItem("token");
 
       if (!token) {
-        alert("Токен не найден");
+        toast.error("Токен не найден");
         return;
       }
 
@@ -198,9 +206,9 @@ function App() {
 
       if (response.status === 200) {
         if (conduct) {
-          alert("Продажа успешно создана и проведена");
+          toast.success("Продажа успешно создана и проведена");
         } else {
-          alert("Продажа успешно создана");
+          toast.success("Продажа успешно создана");
         }
       }
 
@@ -218,13 +226,14 @@ function App() {
   return (
 
     <div className="w-full p-4 min-h-screen bg-muted flex flex-col items-center justify-start space-y-4">
+      <Toaster position="top-center" />
 
       {/* Авторизация */}
 
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
-          <CardTitle className="text-lg text-gray-500">TABLECRM.COM</CardTitle>
-          <CardDescription className="text-2xl text-black-600 font-bold">Мобильный заказ</CardDescription>
+          <CardTitle className="text-base text-gray-500">TABLECRM.COM</CardTitle>
+          <CardDescription className="text-xl text-black-600 font-bold">Мобильный заказ</CardDescription>
           <p className="text-sm text-gray-500">WebApp для создания продажи и проведения в один клик.</p>
           <div className="flex justify-start">
             {isAuth ? (
@@ -258,7 +267,8 @@ function App() {
 
       <Card className="w-full max-w-md">
         <CardHeader className="text-base text-black-500">
-          Введите номер телефона клиента для поиска
+          <CardTitle className="text-base text-black-500 flex items-center"><Phone className="mr-2 h-4 w-4" /> 1. Поиск клиента</CardTitle>
+          <CardDescription className="text-sm text-gray-500">Введите номер телефона клиента для поиска</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Input
@@ -275,9 +285,9 @@ function App() {
           </Button>
           <p className="text-base">Найденный клиент:</p>
           {client ? (
-            <p className="text-base">{client}</p>
+            <p className="text-base text-gray-500">{client}</p>
           ) : (
-            <p className="text-base">Клиент не найден</p>
+            <p className="text-base text-gray-500">Клиент не найден</p>
           )}
         </CardContent>
       </Card>
@@ -286,10 +296,12 @@ function App() {
 
       <Card className="w-full max-w-md">
         <CardHeader className="text-base text-black-500">
-          Параметры продажи
+          <CardTitle className="text-base text-black-500">2. Параметры продажи</CardTitle>
+          <CardDescription className="text-sm text-gray-500">Счёт, организация, склад и тип цены</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Склад */}
+          <p className="text-base text-sm">Склад:</p>
 
           <Select value={warehouse} onValueChange={setWarehouse}>
             <SelectTrigger>
@@ -306,6 +318,8 @@ function App() {
 
           {/* Организация */}
 
+          <p className="text-base text-sm">Организация:</p>
+
           <Select value={organizationId} onValueChange={setOrganizationId}>
             <SelectTrigger>
               <SelectValue placeholder="Выберите организацию" />
@@ -321,6 +335,8 @@ function App() {
 
           {/* Тип оплаты */}
 
+          <p className="text-base text-sm">Тип оплаты:</p>
+
           <Select value={paymentTypeId} onValueChange={setPaymentTypeId}>
             <SelectTrigger>
               <SelectValue placeholder="Выберите тип оплаты" />
@@ -335,6 +351,8 @@ function App() {
           </Select>
 
           {/* Счет */}
+
+          <p className="text-base text-sm">Счет:</p>
 
           <Select value={payboxId} onValueChange={setPayboxId}>
             <SelectTrigger>
@@ -355,7 +373,8 @@ function App() {
 
       <Card className="w-full max-w-md">
         <CardHeader className="text-base text-black-500">
-          Поиск и добавление Товаров
+          <CardTitle className="flex items-center"><ShoppingBag className="mr-2 h-4 w-4" /> 3. Товары</CardTitle>
+          <CardDescription className="text-sm text-gray-500">Поиск и добавление номенклатуры</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-3">
@@ -406,10 +425,10 @@ function App() {
 
       {/* Корзина */}
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md mb-45">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-base flex items-center gap-2">
-            Корзина
+          <CardTitle className="text-base flex items-center">
+            <ShoppingCart className="mr-2 h-4 w-4" /> <div>Корзина</div>
           </CardTitle>
           <CardDescription>
             Количество, цена и сумма по позициям
@@ -424,7 +443,7 @@ function App() {
           ) : (
             goods.map((item, index) => (
               <div
-                key={item.nomenclature}
+                key={`${item.nomenclature}-${index}`}
                 className="rounded-md border bg-white p-3 space-y-3"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -480,35 +499,38 @@ function App() {
       </Card>
 
       {/* Футер */}
-      <Card className="w-full max-w-md">
-        <CardContent className="space-y-2">
-          <div className="w-full max-w-md rounded-md border bg-white px-4 py-3 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Итого</span>
-            <span className="text-base font-semibold">
-              {total.toFixed(2)} ₽
-            </span>
-          </div>
-          <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-            size="lg"
-            onClick={() => submitSale(false)}
-            disabled={goods.length === 0}
-          >
-            Создать продажу
-          </Button>
+      <div className="fixed bottom-0 left-0 w-full flex justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="space-y-2">
+            <div className="w-full max-w-md rounded-md border bg-white px-4 py-3 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Итого</span>
+              <span className="text-base font-semibold">
+                {total.toFixed(2)} ₽
+              </span>
+            </div>
+            <Button
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+              size="lg"
+              onClick={() => submitSale(false)}
+              disabled={goods.length === 0 || !isAuth || !organizationId || !warehouse || !payboxId || !contragent || !paymentTypeId}
 
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full"
-            onClick={() => submitSale(true)}
-            disabled={goods.length === 0}
-          >
-            Создать и провести
-          </Button>
+            >
+              Создать продажу
+            </Button>
 
-        </CardContent>
-      </Card>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="w-full"
+              onClick={() => submitSale(true)}
+              disabled={goods.length === 0 || !isAuth || !organizationId || !warehouse || !payboxId || !contragent || !paymentTypeId}
+            >
+              Создать и провести
+            </Button>
+
+          </CardContent>
+        </Card> </div>
+
 
 
     </div >
