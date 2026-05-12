@@ -26,6 +26,26 @@ type Good = {
   price_type: number;
 };
 
+type Warehouse = {
+  id: number;
+  name: string;
+};
+
+type Organization = {
+  id: number;
+  full_name: string;
+};
+
+type PaymentType = {
+  id: number;
+  name: string;
+};
+
+type Paybox = {
+  id: number;
+  name: string;
+};
+
 
 function App() {
   const [token, setToken] = useState("");
@@ -33,15 +53,15 @@ function App() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [client, setClient] = useState('');
   const [contragent, setContragent] = useState('');
-  const [warehouses, setWarehouses] = useState([]);
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [warehouse, setWarehouse] = useState("");
-  const [organizations, setOrganizations] = useState([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [organizationId, setOrganizationId] = useState("");
-  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([]);
   const [paymentTypeId, setPaymentTypeId] = useState("");
   const [payboxId, setPayboxId] = useState("");
-  const [payboxes, setPayboxes] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [payboxes, setPayboxes] = useState<Paybox[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [productSearch, setProductSearch] = useState("");
   const [goods, setGoods] = useState<Good[]>([]);
 
